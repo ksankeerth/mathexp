@@ -54,7 +54,7 @@ func (cs *ConditionSpec) Eval() bool {
 // Todo : comment
 // It will contain
 type ConditionGroupSpec struct {
-	cond *ConditionSpec
+	cond     *ConditionSpec
 	parent   *ConditionGroupSpec
 	vars     []*VariableSpec
 	exps     []*ExpresionSpec
@@ -63,16 +63,17 @@ type ConditionGroupSpec struct {
 
 type ExpresionSpec struct {
 	opCode MathOp
-	v1 VariableSpec
-	v2 VariableSpec
+	v1     VariableSpec
+	v2     VariableSpec
 }
 
 type VarType string
 
 const (
-	Const  = VarType("constant")
+	Const  = VarType("const")
 	ExpOut = VarType("expout")
 	Ref    = VarType("ref")
+	In     = VarType("in")
 )
 
 type VariableSpec struct {
@@ -80,4 +81,5 @@ type VariableSpec struct {
 	name    string
 	symbol  string
 	value   interface{}
+	// TODO : add unit information
 }
