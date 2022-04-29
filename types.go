@@ -1,4 +1,4 @@
-package mathif
+package mathexp
 
 type Op string
 

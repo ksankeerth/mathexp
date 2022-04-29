@@ -1,3 +1,3 @@
-module github.com/shankeerthan-kasilingam/mathif
+module github.com/shankeerthan-kasilingam/mathexp
 
 go 1.18
