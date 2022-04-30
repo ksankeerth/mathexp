@@ -9,6 +9,7 @@ type ConditionSpec struct {
 func (cond *ConditionSpec) isValid() bool {
 	// TODO : check Op in the allowed list
 	// TODO : check v1 and v2 are valid for Op
+	return true
 }
 
 type VarSpec struct {
@@ -19,12 +20,12 @@ type VarSpec struct {
 	// TODO : add unit information
 }
 
-
 func (vs *VarSpec) isValid() bool {
 	// TODO : check  Type is in the allowed list
 	// TODO : check regex for name
 	// TODO : check regex for sym
 	// TODO : check  is the value suitable for the Type
+	return true
 }
 
 type ExpresionSpec struct {
@@ -35,8 +36,9 @@ type ExpresionSpec struct {
 }
 
 func (es *ExpresionSpec) isValid(vars []*VarSpec) bool {
-	// TODO : check Op is allowed list 
+	// TODO : check Op is allowed list
 	// TODO: check v1, v2 and Out exists in vars
+	return true
 }
 
 type ConditionGroupSpec struct {
@@ -69,5 +71,3 @@ func (cg *ConditionGroupSpec) traverse(vars []*VarSpec, traveler traveler) {
 func (cg *ConditionGroupSpec) isRoot() bool {
 	return cg.parent == nil
 }
-
-func verify
