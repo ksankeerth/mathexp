@@ -1,21 +1,19 @@
-package mathexp_test
+package mathexp
 
 import (
 	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/shankeerthan-kasilingam/mathexp"
 )
 
-func runMathExpTest(t *testing.T, jsonPath string, test func(t *testing.T, mexp *mathexp.MathExp)) {
+func runMathExpTest(t *testing.T, jsonPath string, test func(t *testing.T, mexp *MathExp)) {
 	if jsonPath != "" {
 		jsonPath = "./test-data/electricity-calc-sample.json"
 	}
 	byteData, file := openFile(t, "./test-data/electricity-calc-sample.json")
 	defer closeFile(t, file)
-	mathExp, err := mathexp.New(byteData)
+	mathExp, err := New(byteData)
 	if err != nil {
 		t.Fatalf("Failed to parse the data %v", err)
 	}
@@ -26,7 +24,7 @@ func runMathExpTest(t *testing.T, jsonPath string, test func(t *testing.T, mexp 
 
 func TestMathExpFromJson(t *testing.T) {
 
-	runMathExpTest(t, "", func(t *testing.T, mexp *mathexp.MathExp) {
+	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
 		if len(mexp.ExpWrapper.SubConditionGroups) != 3 {
 			t.Errorf("SubConditionsGroups are not correct, got %d want %d", len(mexp.ExpWrapper.SubConditionGroups), 3)
 		}
@@ -40,8 +38,20 @@ func TestMathExpFromJson(t *testing.T) {
 	})
 }
 
-func Test
-
+func TestMathExpTransversal(t *testing.T) {
+	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
+		var count = 0
+		mexp.ExpWrapper.traverse(nil, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+			if len(vars) != 5 {
+				t.Errorf("No of vars doesn't match got %d want %d", len(vars), 5)
+			}
+			count++
+		})
+		if count != 4 {
+			t.Errorf("Traversal is not complete, stopped at %d but exptcted to stop at %d", count, 4)
+		}
+	})
+}
 
 func openFile(t *testing.T, filePath string) ([]byte, *os.File) {
 	file, err := os.Open(filePath)
