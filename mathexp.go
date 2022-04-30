@@ -13,3 +13,5 @@ func New(expJson []byte) (*MathExp, error) {
 	}
 	return &MathExp{ExpWrapper: &rootCondGrpSpec}, nil
 }
+
+
