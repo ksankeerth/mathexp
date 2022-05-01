@@ -11,7 +11,8 @@ func New(expJson []byte) (*MathExp, error) {
 	if err := json.Unmarshal(expJson, &rootCondGrpSpec); err != nil {
 		return nil, err
 	}
+	if ok, err := rootCondGrpSpec.isValid(); !ok {
+		return nil, err
+	}
 	return &MathExp{ExpWrapper: &rootCondGrpSpec}, nil
 }
-
-

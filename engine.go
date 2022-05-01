@@ -1,15 +1,36 @@
 package mathexp
 
+import (
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+)
+
 type ConditionSpec struct {
 	Op string
 	V1 interface{}
 	V2 interface{}
 }
 
+func (cond *ConditionSpec) String() string {
+	return fmt.Sprintf("%#v", cond)
+}
+
 func (cond *ConditionSpec) isValid() bool {
-	// TODO : check Op in the allowed list
-	// TODO : check v1 and v2 are valid for Op
-	return true
+	valid := cond != nil
+	if valid {
+		types, ok := CondOps[cond.Op]
+		if ok {
+			v1Typ := reflect.TypeOf(cond.V1)
+			v2Typ := reflect.TypeOf(cond.V2)
+			if v1Typ == v2Typ {
+				return isTypeAllowed(types, v1Typ)
+
+			}
+		}
+	}
+	return valid
 }
 
 type VarSpec struct {
@@ -20,12 +41,28 @@ type VarSpec struct {
 	// TODO : add unit information
 }
 
+func (vs *VarSpec) String() string {
+	return fmt.Sprintf("%#v", vs)
+}
+
 func (vs *VarSpec) isValid() bool {
-	// TODO : check  Type is in the allowed list
-	// TODO : check regex for name
-	// TODO : check regex for sym
-	// TODO : check  is the value suitable for the Type
-	return true
+	valid := false
+	if vs != nil {
+		switch vs.Type {
+		case VarTypIn:
+			valid = reflect.TypeOf(vs.Value) == reflect.TypeOf(nil)
+		case VarTypOut:
+
+			valid = reflect.TypeOf(vs.Value) == reflect.TypeOf(nil)
+		case VarTypConst:
+			valid = vs.Value != nil
+		case VarTypExpOut:
+			// valid = reflect.TypeOf(vs.Value) == reflect.TypeOf(nil)
+		}
+		// TODO : check regex for name
+		// TODO : check regex for sym
+	}
+	return valid
 }
 
 type ExpresionSpec struct {
@@ -35,10 +72,52 @@ type ExpresionSpec struct {
 	Out string
 }
 
+func (es *ExpresionSpec) String() string {
+	return fmt.Sprintf("%#v", es)
+}
+
 func (es *ExpresionSpec) isValid(vars []*VarSpec) bool {
-	// TODO : check Op is allowed list
-	// TODO: check v1, v2 and Out exists in vars
-	return true
+	valid := false
+	if es != nil {
+		if reflect.TypeOf(es.V1) == reflect.TypeOf(es.V2) {
+			if strings.Contains(strings.Join(MathOps, ","), es.Op+",") {
+				stop := false
+				v1Valid := false
+				v2Valid := false
+				outValid := false
+
+				iterateVars(vars, &stop, func(value interface{}) {
+					vs, ok := value.(*VarSpec)
+					if ok {
+						if !v1Valid && vs.Sym == es.V1 && vs.Type != VarTypOut {
+							v1Valid = true
+						}
+						if !v2Valid && vs.Sym == es.V2 && vs.Type != VarTypOut {
+							v2Valid = true
+						}
+						if !outValid && vs.Sym == es.Out && (vs.Type == VarTypOut || vs.Type == VarTypExpOut) {
+							outValid = true
+						}
+						if v1Valid && v2Valid && outValid {
+							stop = true
+							valid = true
+						}
+					}
+				})
+
+			}
+		}
+	}
+	return valid
+}
+
+func iterateVars(vars []*VarSpec, stop *bool, matcher func(value interface{})) {
+	for _, vs := range vars {
+		if *stop {
+			return
+		}
+		matcher(vs)
+	}
 }
 
 type ConditionGroupSpec struct {
@@ -70,4 +149,34 @@ func (cg *ConditionGroupSpec) traverse(vars []*VarSpec, traveler traveler) {
 
 func (cg *ConditionGroupSpec) isRoot() bool {
 	return cg.parent == nil
+}
+
+func (cg *ConditionGroupSpec) isValid() (bool, error) {
+	valid := false
+	var err error
+	cg.traverse(nil, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+
+		for _, vs := range cg.Vars {
+			if !vs.isValid() {
+				err = errors.New("Var " + vs.String() + " is not valid")
+				return
+			}
+		}
+		for _, exp := range cg.Expressions {
+			if !exp.isValid(vars) {
+				err = errors.New("Expression " + exp.String() + " is not valid")
+				return
+			}
+		}
+		if !cg.isRoot() {
+			if !cg.Cond.isValid() {
+				err = errors.New("Condition " + cg.Cond.String() + " is not valid")
+				return
+			}
+		}
+		valid = true
+
+	})
+	//TODO : return a descriptive error message
+	return valid, err
 }

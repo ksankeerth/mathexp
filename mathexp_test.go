@@ -15,7 +15,7 @@ func runMathExpTest(t *testing.T, jsonPath string, test func(t *testing.T, mexp 
 	defer closeFile(t, file)
 	mathExp, err := New(byteData)
 	if err != nil {
-		t.Fatalf("Failed to parse the data %v", err)
+		t.Fatalf("Failed to parse the data : %v", err)
 	}
 
 	test(t, mathExp)
@@ -49,6 +49,14 @@ func TestMathExpTransversal(t *testing.T) {
 		})
 		if count != 4 {
 			t.Errorf("Traversal is not complete, stopped at %d but exptcted to stop at %d", count, 4)
+		}
+	})
+}
+
+func TestMathExpIsValid(t *testing.T) {
+	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
+		if valid, _ := mexp.ExpWrapper.isValid(); !valid {
+			t.Errorf("Expected expression to be valid, but invalid")
 		}
 	})
 }

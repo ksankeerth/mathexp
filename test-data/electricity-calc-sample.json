@@ -19,7 +19,7 @@
             "value": 5.0
         },
         {
-            "type": "inp",
+            "type": "in",
             "sym": "elec_consumption",
             "name": "Electricity consumption"
         },
@@ -40,7 +40,7 @@
             "subconditiongroups": [],
             "expressions": [
                 {
-                    "op": "multiply",
+                    "op": "mul",
                     "v1": "elec_consumption",
                     "v2": "elec_prc_under_100kwh",
                     "out": "elec_cost"
@@ -65,7 +65,7 @@
             "subconditiongroups": [],
             "expressions": [
                 {
-                    "op": "multiply",
+                    "op": "mul",
                     "v1": "elec_consumption",
                     "v2": "elec_prc_bw_100kwh_and_200kwh",
                     "out": "elec_cost"
@@ -82,7 +82,7 @@
             "subconditiongroups": [],
             "expressions": [
                 {
-                    "op": "multiply",
+                    "op": "mul",
                     "v1": "elec_consumption",
                     "v2": "elec_prc_above_200kwh",
                     "out": "elec_cost"
