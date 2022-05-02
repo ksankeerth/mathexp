@@ -42,11 +42,12 @@ func TestMathExpFromJson(t *testing.T) {
 func TestMathExpTransversal(t *testing.T) {
 	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
 		var count = 0
-		mexp.ExpWrapper.traverse(new([]*VarSpec), func(cg *ConditionGroupSpec, vars []*VarSpec) {
+		mexp.ExpWrapper.traverse(new([]*VarSpec), func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
 			if len(vars) != 5 {
 				t.Errorf("No of vars doesn't match got %d want %d", len(vars), 5)
 			}
 			count++
+			return false
 		})
 		if count != 4 {
 			t.Errorf("Traversal is not complete, stopped at %d but exptcted to stop at %d", count, 4)

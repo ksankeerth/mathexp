@@ -27,4 +27,5 @@ const (
 
 var (
 	ErrExpNotValid = errors.New("Errors in the expression")
+	ErrArgsMismatch = errors.New("Provided args are not enough")
 )

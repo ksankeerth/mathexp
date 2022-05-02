@@ -128,7 +128,7 @@ type ConditionGroupSpec struct {
 	parent             *ConditionGroupSpec
 }
 
-type traveler func(cg *ConditionGroupSpec, vars []*VarSpec)
+type traveler func(cg *ConditionGroupSpec, vars []*VarSpec) bool
 
 func (cg *ConditionGroupSpec) traverse(vars *[]*VarSpec, traveler traveler) {
 
@@ -138,8 +138,8 @@ func (cg *ConditionGroupSpec) traverse(vars *[]*VarSpec, traveler traveler) {
 	} else {
 		*vars = append(*vars, cg.Vars...)
 	}
-	traveler(cg, *vars)
-	if cg.SubConditionGroups == nil {
+	stop := traveler(cg, *vars)
+	if cg.SubConditionGroups == nil || stop {
 		return
 	}
 	for _, subCg := range cg.SubConditionGroups {
@@ -155,28 +155,28 @@ func (cg *ConditionGroupSpec) isValid() (bool, error) {
 	valid := false
 	var err error
 	var vars []*VarSpec
-	cg.traverse(&vars, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+	cg.traverse(&vars, func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
 
 		for _, vs := range cg.Vars {
 			if !vs.isValid() {
 				err = errors.New("Var " + vs.String() + " is not valid")
-				return
+				return true
 			}
 		}
 		for _, exp := range cg.Expressions {
 			if !exp.isValid(vars) {
 				err = errors.New("Expression " + exp.String() + " is not valid")
-				return
+				return true
 			}
 		}
 		if !cg.isRoot() {
 			if !cg.Cond.isValid() {
 				err = errors.New("Condition " + cg.Cond.String() + " is not valid")
-				return
+				return true
 			}
 		}
 		valid = true
-
+		return false
 	})
 	//TODO : return a descriptive error message
 	return valid, err
@@ -184,8 +184,29 @@ func (cg *ConditionGroupSpec) isValid() (bool, error) {
 
 func allVars(cg *ConditionGroupSpec) []*VarSpec {
 	var allVars []*VarSpec
-	cg.traverse(&allVars, func(cg *ConditionGroupSpec, vars []*VarSpec) {
-
+	cg.traverse(&allVars, func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
+		return false
 	})
 	return allVars
 }
+
+func verifyBeforeEvalute(cg *ConditionGroupSpec, args map[string]interface{}) bool {
+	requiredArgs := 0
+	for _, vs := range allVars(cg) {
+		if vs.Type == VarTypIn {
+			if _, ok := args[vs.Sym]; ok {
+				requiredArgs++
+			}
+		}
+	}
+	return requiredArgs == len(args)
+}
+
+// func (cg *ConditionGroupSpec) evaluate(args map[string]interface{}) (map[string]interface{}, error) {
+// 	if ok := verifyBeforeEvalute(cg, args); !ok {
+// 		return nil, ErrArgsMismatch
+// 	}
+// 	cg.traverse(new([]*VarSpec), func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
+
+// 	})
+// }
