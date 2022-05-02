@@ -1,6 +1,8 @@
 package mathexp
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type MathExp struct {
 	ExpWrapper *ConditionGroupSpec
@@ -15,4 +17,8 @@ func New(expJson []byte) (*MathExp, error) {
 		return nil, err
 	}
 	return &MathExp{ExpWrapper: &rootCondGrpSpec}, nil
+}
+
+func (mexp *MathExp) Evaluate(args map[string]string) {
+
 }

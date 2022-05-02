@@ -8,10 +8,11 @@ import (
 )
 
 func runMathExpTest(t *testing.T, jsonPath string, test func(t *testing.T, mexp *MathExp)) {
-	if jsonPath != "" {
+
+	if jsonPath == "" {
 		jsonPath = "./test-data/electricity-calc-sample.json"
 	}
-	byteData, file := openFile(t, "./test-data/electricity-calc-sample.json")
+	byteData, file := openFile(t, jsonPath)
 	defer closeFile(t, file)
 	mathExp, err := New(byteData)
 	if err != nil {
@@ -41,7 +42,7 @@ func TestMathExpFromJson(t *testing.T) {
 func TestMathExpTransversal(t *testing.T) {
 	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
 		var count = 0
-		mexp.ExpWrapper.traverse(nil, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+		mexp.ExpWrapper.traverse(new([]*VarSpec), func(cg *ConditionGroupSpec, vars []*VarSpec) {
 			if len(vars) != 5 {
 				t.Errorf("No of vars doesn't match got %d want %d", len(vars), 5)
 			}
@@ -57,6 +58,14 @@ func TestMathExpIsValid(t *testing.T) {
 	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
 		if valid, _ := mexp.ExpWrapper.isValid(); !valid {
 			t.Errorf("Expected expression to be valid, but invalid")
+		}
+	})
+}
+
+func TestMathExpAllVars(t *testing.T) {
+	runMathExpTest(t, "./test-data/electricity-calc-sample-vars-in-subcondg.json", func(t *testing.T, mexp *MathExp) {
+		if len(allVars(mexp.ExpWrapper)) != 6 {
+			t.Errorf("Expected allVars to return %d vars but returned %d", 6, len(allVars(mexp.ExpWrapper)))
 		}
 	})
 }

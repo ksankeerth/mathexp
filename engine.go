@@ -130,15 +130,15 @@ type ConditionGroupSpec struct {
 
 type traveler func(cg *ConditionGroupSpec, vars []*VarSpec)
 
-func (cg *ConditionGroupSpec) traverse(vars []*VarSpec, traveler traveler) {
+func (cg *ConditionGroupSpec) traverse(vars *[]*VarSpec, traveler traveler) {
 
-	if vars == nil {
-		vars = make([]*VarSpec, len(cg.Vars))
-		copy(vars, cg.Vars)
+	if *vars == nil {
+		*vars = make([]*VarSpec, len(cg.Vars))
+		copy(*vars, cg.Vars)
 	} else {
-		vars = append(vars, cg.Vars...)
+		*vars = append(*vars, cg.Vars...)
 	}
-	traveler(cg, vars)
+	traveler(cg, *vars)
 	if cg.SubConditionGroups == nil {
 		return
 	}
@@ -154,7 +154,8 @@ func (cg *ConditionGroupSpec) isRoot() bool {
 func (cg *ConditionGroupSpec) isValid() (bool, error) {
 	valid := false
 	var err error
-	cg.traverse(nil, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+	var vars []*VarSpec
+	cg.traverse(&vars, func(cg *ConditionGroupSpec, vars []*VarSpec) {
 
 		for _, vs := range cg.Vars {
 			if !vs.isValid() {
@@ -179,4 +180,12 @@ func (cg *ConditionGroupSpec) isValid() (bool, error) {
 	})
 	//TODO : return a descriptive error message
 	return valid, err
+}
+
+func allVars(cg *ConditionGroupSpec) []*VarSpec {
+	var allVars []*VarSpec
+	cg.traverse(&allVars, func(cg *ConditionGroupSpec, vars []*VarSpec) {
+
+	})
+	return allVars
 }
