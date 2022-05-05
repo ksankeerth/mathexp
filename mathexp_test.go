@@ -79,6 +79,22 @@ func TestMathExpVerifyBeforEvaluate(t *testing.T) {
 			t.Errorf("Expected false  but got true")
 		}
 
+		// Expect ok to be true
+		args := make(map[string]interface{})
+		args["elec_consumption"] = 100.0
+		ok = verifyBeforeEvalute(mexp.ExpWrapper.Vars, args)
+
+		if !ok {
+			t.Errorf("Expected true  but got false")
+		}
+
+		args["test_additional_in"] = 2000
+		ok = verifyBeforeEvalute(mexp.ExpWrapper.Vars, args)
+
+		if ok {
+			t.Errorf("Expected false  but got true")
+		}
+
 	})
 }
 
