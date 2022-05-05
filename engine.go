@@ -543,9 +543,7 @@ func verifyBeforeEvalute(vars []*VarSpec, args map[string]interface{}) bool {
 	requiredArgs := 0
 	for _, vs := range vars {
 		if vs.Type == VarTypIn {
-			if _, ok := args[vs.Sym]; ok {
-				requiredArgs++
-			}
+			requiredArgs++
 		}
 	}
 	return requiredArgs == len(args)

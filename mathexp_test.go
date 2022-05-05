@@ -71,6 +71,21 @@ func TestMathExpAllVars(t *testing.T) {
 	})
 }
 
+func TestMathExpVerifyBeforEvaluate(t *testing.T) {
+	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
+		// Expect ok to be false
+		ok := verifyBeforeEvalute(mexp.ExpWrapper.Vars, make(map[string]interface{}))
+		if ok {
+			t.Errorf("Expected false  but got true")
+		}
+
+	})
+}
+
+func TestMathExpEvaluate(t *testing.T) {
+
+}
+
 func openFile(t *testing.T, filePath string) ([]byte, *os.File) {
 	file, err := os.Open(filePath)
 	if err != nil {
