@@ -2,6 +2,10 @@
 
 matheXp is a small library that helps to create shareable complex expressions using JSON.
 
+### Try matheXp
+
+Go playground : https://go.dev/play/p/Vsft79JF0rb
+
 ## Features
 
 Read complex expressions in JSON format and evaluate against the provided data.
