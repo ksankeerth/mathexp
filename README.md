@@ -1,6 +1,6 @@
-# matheXP
+# matheXp
 
-matheXP is a small library that helps to create shareable complex expressions using JSON.
+matheXp is a small library that helps to create shareable complex expressions using JSON.
 
 ## Features
 
@@ -8,7 +8,7 @@ Read complex expressions in JSON format and evaluate against the provided data.
 
 ## Usecases
 
-In most cases, We usually have static expressions and equations in code. In some cases, the end-user needs to create expressions with conditions and evaluate them with data while the program/server is running. The matheXp is developed for such use cases.
+In most cases, We usually have static expressions and equations in code. ***In some cases, the end-user needs to create expressions with conditions and evaluate them with data while the program/server is running. The matheXp is developed for such use cases***.
 
 The matheXp uses a JSON to represent expressions and conditions. So the expressions can be created using a User Interface simply.
 
@@ -17,11 +17,11 @@ For example, if we want to calculate the electricity bill with the below conditi
 Note: For simplicity, the electricity bill calculation is shown as an example. Actually, this library was created for supporting calculations of Green House Gas (GHG) emissions from many varying sources
 
 
-| kWh | kWh   | Cost |
-| :---- | ------- | :----- |
-| 0   | 100   | 5.0  |
-| 100 | 200   | 7.0  |
-| 200 | above | 10.0 |
+| kWh(lower) | kWh(upper) | Cost |
+| :----------- | ------------ | :----- |
+| 0          | 100        | 5.0  |
+| 100        | 200        | 7.0  |
+| 200        | above      | 10.0 |
 
 In matheXp, the equations for above can be represented as below.
 
@@ -236,3 +236,7 @@ type ExpresionSpec struct {
 | sub    | Subtraction     |
 | mul    | Multifilication |
 | div    | Division        |
+
+### Contributing
+
+The matheXp is actively being developed. Bug reports and PR are welcomed 😄
