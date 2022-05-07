@@ -99,7 +99,30 @@ func TestMathExpVerifyBeforEvaluate(t *testing.T) {
 }
 
 func TestMathExpEvaluate(t *testing.T) {
-
+	runMathExpTest(t, "", func(t *testing.T, mexp *MathExp) {
+		args := make(map[string]interface{})
+		args["elec_consumption"] = 99.0
+		out, err := mexp.Evaluate(args)
+		if err != nil {
+			t.Errorf("Failed due to %v", err)
+		}
+		if len(out) != 1 {
+			t.Errorf("Expected output size %d but got %d", 1, len(out))
+		}
+		if v, ok := out["elec_cost"]; !ok || v != 495.0 {
+			t.Errorf("Expected %f but got %f", 495.0, v)
+		}
+		args["elec_consumption"] = 100.0
+		out, _ = mexp.Evaluate(args)
+		if v, ok := out["elec_cost"]; !ok || v != 700.0 {
+			t.Errorf("Expected %f but got %f", 840.0, v)
+		}
+		args["elec_consumption"] = 1000.0
+		out, _ = mexp.Evaluate(args)
+		if v, ok := out["elec_cost"]; !ok || v != 10000.0 {
+			t.Errorf("Expected %f but got %f", 10000.0, v)
+		}
+	})
 }
 
 func openFile(t *testing.T, filePath string) ([]byte, *os.File) {

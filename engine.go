@@ -51,8 +51,8 @@ func (cond *ConditionSpec) evaluate(vals map[string]*Value) (bool, error) {
 	// after resolve the values, typeof v1Val and typeof v2Val should be the same
 	// finally evaluate
 
-	if v1Cond, ok := cond.V1.(ConditionSpec); ok {
-		if v2Cond, ok := cond.V2.(ConditionSpec); ok {
+	if v1Cond, ok := cond.V1.(*ConditionSpec); ok {
+		if v2Cond, ok := cond.V2.(*ConditionSpec); ok {
 			v1Match, err := v1Cond.evaluate(vals)
 			if err != nil {
 				return false, err
@@ -71,10 +71,10 @@ func (cond *ConditionSpec) evaluate(vals map[string]*Value) (bool, error) {
 
 	var v1Val interface{}
 	var v2Val interface{}
-	v1Val = v1Str
-	v2Val = v2Str
 
 	if v1StrOk && v2StrOk {
+		v1Val = v1Str
+		v2Val = v2Str
 		resolved := resolveRef(vals, v1Str, v2Str)
 		if rv, ok := resolved[v1Str]; ok {
 			v1Val = rv.val
@@ -84,12 +84,16 @@ func (cond *ConditionSpec) evaluate(vals map[string]*Value) (bool, error) {
 		}
 		return condEval(cond.Op, v1Val, v2Val)
 	} else if v1StrOk {
+		v1Val = v1Str
+		v2Val = cond.V2
 		resolved := resolveRef(vals, v1Str, v2Str)
 		if rv, ok := resolved[v1Str]; ok {
 			v1Val = rv.val
 		}
 		return condEval(cond.Op, v1Val, v2Val)
 	} else if v2StrOk {
+		v1Val = cond.V2
+		v2Val = v2Str
 		resolved := resolveRef(vals, v1Str, v2Str)
 
 		if rv, ok := resolved[v2Str]; ok {
@@ -497,7 +501,9 @@ func (cg *ConditionGroupSpec) traverse(vars *[]*VarSpec, traveler traveler) {
 }
 
 func (cg *ConditionGroupSpec) isRoot() bool {
-	return cg.parent == nil
+	// TODO: currently parent is nil for all the cg
+	// need to traverse the graph after creating from json and assign parent correctly
+	return cg.Cond == nil
 }
 
 func (cg *ConditionGroupSpec) isValid() (bool, error) {
@@ -531,6 +537,40 @@ func (cg *ConditionGroupSpec) isValid() (bool, error) {
 	return valid, err
 }
 
+func (cg *ConditionGroupSpec) sanititize() error {
+
+	var err error
+	cg.traverse(new([]*VarSpec), func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
+		if !cg.isRoot() {
+			// Repair Condition
+			v1Map, ok := cg.Cond.V1.(map[string]interface{})
+			if ok {
+				v2Map, ok := cg.Cond.V2.(map[string]interface{})
+				if ok {
+
+					cg.Cond.V1 = &ConditionSpec{
+						Op: v1Map["op"].(string),
+						V1: v1Map["v1"],
+						V2: v1Map["v2"],
+					}
+					cg.Cond.V2 = &ConditionSpec{
+						Op: v2Map["op"].(string),
+						V1: v2Map["v1"],
+						V2: v2Map["v2"],
+					}
+				} else {
+					err = errors.New("both should be ConditionSpec")
+					return true
+				}
+
+			}
+
+		}
+		return false
+	})
+	return err
+}
+
 func allVars(cg *ConditionGroupSpec) []*VarSpec {
 	var allVars []*VarSpec
 	cg.traverse(&allVars, func(cg *ConditionGroupSpec, vars []*VarSpec) bool {
@@ -556,8 +596,10 @@ func (cg *ConditionGroupSpec) evaluate(values map[string]*Value) (map[string]int
 		ok, err := cg.Cond.evaluate(values)
 		if ok {
 			next = true
+		} else {
+			return nil, err
 		}
-		return nil, err
+
 	}
 
 	// Condition has matched or RootNode

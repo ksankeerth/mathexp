@@ -10,13 +10,13 @@
             "type": "const",
             "sym": "elec_prc_bw_100kwh_and_200kwh",
             "name": "Electricy Price per kWH if the usage between 100kWH and 200kwh",
-            "value": 5.0
+            "value": 7.0
         },
         {
             "type": "const",
             "sym": "elec_prc_above_200kwh",
             "name": "Electricy Price per kWH if the usage is over 200kwh",
-            "value": 5.0
+            "value": 10.0
         },
         {
             "type": "in",
@@ -35,7 +35,7 @@
             "cond": {
                 "op": "lt",
                 "v1": "elec_consumption",
-                "v2": "100"
+                "v2": 100
             },
             "subconditiongroups": [],
             "expressions": [
@@ -52,7 +52,7 @@
             "cond": {
                 "op": "and",
                 "v1": {
-                    "op": "gteq",
+                    "op": "gte",
                     "v1": "elec_consumption",
                     "v2": 100
                 },
