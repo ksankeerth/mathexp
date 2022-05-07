@@ -18,7 +18,6 @@ The matheXp uses a JSON to represent expressions and conditions. So the expressi
 
 For example, if we want to calculate the electricity bill with the below conditions, We can have if and else conditions in the code and evaluate the cost simply. But if an end-user wants to create such an equation dynamically when a program is running, the matheXp will be a good choice.
 
-Note: For simplicity, the electricity bill calculation is shown as an example. Actually, this library was created for supporting calculations of Green House Gas (GHG) emissions from many varying sources
 
 
 | kWh(lower) | kWh(upper) | Cost |
