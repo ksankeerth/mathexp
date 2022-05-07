@@ -25,7 +25,7 @@ Note: For simplicity, the electricity bill calculation is shown as an example. A
 
 In matheXp, the equations for above can be represented as below.
 
-```
+```json
 {
     "vars": [
         {
