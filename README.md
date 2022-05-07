@@ -127,7 +127,7 @@ In matheXp, the equations for above can be represented as below.
 
 The below is a simple example.
 
-```
+```go
 package main
 
 import (
@@ -180,7 +180,7 @@ func main() {
 
 A graph structure is used to represent conditions and expressions.
 
-```
+```go
 
 type ConditionGroupSpec struct {
 	Cond               *ConditionSpec
