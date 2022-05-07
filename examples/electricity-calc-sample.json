@@ -1,0 +1,95 @@
+{
+    "vars": [
+        {
+            "type": "const",
+            "sym": "elec_prc_under_100kwh",
+            "name": "Electricy Price per kWH if the usage under 100KWH",
+            "value": 5.0
+        },
+        {
+            "type": "const",
+            "sym": "elec_prc_bw_100kwh_and_200kwh",
+            "name": "Electricy Price per kWH if the usage between 100kWH and 200kwh",
+            "value": 7.0
+        },
+        {
+            "type": "const",
+            "sym": "elec_prc_above_200kwh",
+            "name": "Electricy Price per kWH if the usage is over 200kwh",
+            "value": 10.0
+        },
+        {
+            "type": "in",
+            "sym": "elec_consumption",
+            "name": "Electricity consumption"
+        },
+        {
+            "type": "out",
+            "sym": "elec_cost",
+            "name": "Cost of Electricity"
+        }
+    ],
+    "expressions": [],
+    "subconditiongroups": [
+        {
+            "cond": {
+                "op": "lt",
+                "v1": "elec_consumption",
+                "v2": 100
+            },
+            "subconditiongroups": [],
+            "expressions": [
+                {
+                    "op": "mul",
+                    "v1": "elec_consumption",
+                    "v2": "elec_prc_under_100kwh",
+                    "out": "elec_cost"
+                }
+            ],
+            "vars": []
+        },
+        {
+            "cond": {
+                "op": "and",
+                "v1": {
+                    "op": "gte",
+                    "v1": "elec_consumption",
+                    "v2": 100
+                },
+                "v2": {
+                    "op": "lt",
+                    "v1": "elec_consumption",
+                    "v2": 200
+                }
+            },
+            "subconditiongroups": [],
+            "expressions": [
+                {
+                    "op": "mul",
+                    "v1": "elec_consumption",
+                    "v2": "elec_prc_bw_100kwh_and_200kwh",
+                    "out": "elec_cost"
+                }
+            ],
+            "vars": []
+        },
+        {
+            "cond": {
+                "op": "gt",
+                "v1": "elec_consumption",
+                "v2": 200
+            },
+            "subconditiongroups": [],
+            "expressions": [
+                {
+                    "op": "mul",
+                    "v1": "elec_consumption",
+                    "v2": "elec_prc_above_200kwh",
+                    "out": "elec_cost"
+                }
+            ],
+            "vars": []
+        }
+    ],
+    "cond": null
+}
